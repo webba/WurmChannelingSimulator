@@ -18,7 +18,7 @@ namespace WurmSimulator.Lib
 
         public double DispellThreshold { get; set; } = 120;
 
-        public double Simulations { get; set; } = 100;
+        public double Simulations { get; set; } = 10000;
 
         public double ItemQL { get; set; } = 90;
 
