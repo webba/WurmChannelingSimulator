@@ -1,35 +1,18 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using MathNet.Numerics.Statistics;
-using WurmSimulator;
+using WurmSimulator.Lib;
 
 Console.WriteLine("Hello, World!");
 
+
+var shatterMode = "Restart";
 
 List<Scenario> scenarioList = new List<Scenario>()
 {
     new Scenario()
     {
-        DispellThreshold = 120
-    },
-    new Scenario()
-    {
-        DispellThreshold = 90
-    },
-    new Scenario()
-    {
-        DispellThreshold = 85
-    },
-    new Scenario()
-    {
-        DispellThreshold = 80
-    },
-    new Scenario()
-    {
-        DispellThreshold = 75
-    },
-    new Scenario()
-    {
-        DispellThreshold = 70
+        TargetPower = 109,
+        DispellThreshold = 20
     },
 };
 
@@ -43,7 +26,7 @@ foreach (Scenario scenario in scenarioList)
     double dispellThreshold = scenario.DispellThreshold;
     double itemQL = scenario.ItemQL;
 
-    int simulations = 1000000;
+    int simulations = 10000;
 
     List<double> totalFavorList = new();
     List<double> totalSkillCastsList = new();
@@ -104,11 +87,22 @@ foreach (Scenario scenario in scenarioList)
                 {
                     if (WurmSkillUtil.IsShatter(power, itemQL))
                     {
-                        isCurrentItem = false;
-                        currentCastPower = 0;
-                        shatters += 1;
-                        totalShatters += 1;
-                        completed = true;
+                        if (shatterMode == "Restart")
+                        {
+                            isCurrentItem = false;
+                            currentCastPower = 0;
+                            shatters += 1;
+                            totalShatters += 1;
+                        }
+                        else
+                        {
+                            isCurrentItem = false;
+                            currentCastPower = 0;
+                            shatters += 1;
+                            totalShatters += 1;
+                            completed = true;
+
+                        }
                     }
                 }
             }

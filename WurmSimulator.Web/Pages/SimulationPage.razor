@@ -1,0 +1,149 @@
+﻿@page "/"
+@using WurmSimulator.Lib
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light p-3 mb-5">
+    <a class="navbar-brand" href="#">Enchant Simulator</a>
+    <div class="navbar-nav">
+        <a class="nav-item nav-link @((!showResults && !running) ? "active" : "")" @onclick="ShowInput" href="#">Input</a>
+        <a class="nav-item nav-link @((running) ? "active" : "")" @onclick="ShowRunning" href="#">Running</a>
+        <a class="nav-item nav-link @((showResults && result != null) ? "active" : "")" @onclick="ShowResults" href="#">Results</a>
+    </div>
+</nav>
+
+@if (!showResults && !running)
+{
+    <EditForm Model="@scenario" OnValidSubmit="RunSimulation">
+        <div class="mb-3">
+            <label class="form-label">Simulations</label>
+            <InputNumber class="form-control" @bind-Value="scenario.Simulations" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Channeling Skill</label>
+            <InputNumber class="form-control" @bind-Value="scenario.ChannelingSkill" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Benediction</label>
+            <InputCheckbox class="form-check-input" @bind-Value="scenario.Bene" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Bonus</label>
+            <InputNumber class="form-control" @bind-Value="scenario.Bonus" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Target Power</label>
+            <InputNumber class="form-control" @bind-Value="scenario.TargetPower" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Dispell Threshold</label>
+            <InputNumber class="form-control" @bind-Value="scenario.DispellThreshold" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Item QL</label>
+            <InputNumber class="form-control" @bind-Value="scenario.ItemQL" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Spell Favor</label>
+            <InputNumber class="form-control" @bind-Value="scenario.SpellFavor" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Spell Difficulty</label>
+            <InputNumber class="form-control" @bind-Value="scenario.SpellDifficulty" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Shatter Type</label>
+            <InputSelect class="form-control" @bind-Value="@scenario.ShatterType">
+                @foreach (var value in Enum.GetValues<ShatterType>())
+                {
+                    <option value="@value">@value</option>
+                }
+        </InputSelect>
+    </div>
+    <button type="submit" class="btn btn-primary">Run</button>
+</EditForm>
+}
+else if (running)
+{
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+}
+else
+{
+    if (result == null)
+    {
+        <dl class="row">
+            <dt class="col-sm-3">No Results</dt>
+            <dd class="col-sm-9">Something Went Wrong</dd>
+        </dl>
+    }
+    else
+    {
+        <dl class="row">
+            <dt class="col-sm-3">Successes</dt>
+            <dd class="col-sm-9">@result.Successes</dd>
+
+            <dt class="col-sm-3">Shatter Rate</dt>
+            <dd class="col-sm-9">@((result.Shatters / scenario.Simulations).ToString("P"))</dd>
+
+            <dt class="col-sm-3">Total Favor - Average</dt>
+            <dd class="col-sm-9">@result.TotalFavor!.Average.ToString("N2")</dd>
+
+            <dt class="col-sm-3">Total Favor - Standard Deviation</dt>
+            <dd class="col-sm-9">@result.TotalFavor!.StandardDeviation.ToString("N2")</dd>
+
+            <dt class="col-sm-3">Total Casts - Average</dt>
+            <dd class="col-sm-9">@result.TotalCasts!.Average.ToString("N2")</dd>
+
+            <dt class="col-sm-3">Total Casts - Standard Deviation</dt>
+            <dd class="col-sm-9">@result.TotalCasts!.StandardDeviation.ToString("N2")</dd>
+
+            <dt class="col-sm-3">Total Dispels - Average</dt>
+            <dd class="col-sm-9">@result.TotalDispels!.Average.ToString("N2")</dd>
+
+            <dt class="col-sm-3">Total Dispels - Standard Deviation</dt>
+            <dd class="col-sm-9">@result.TotalDispels!.StandardDeviation.ToString("N2")</dd>
+        </dl>
+
+    }
+}
+@code {
+    Scenario scenario = new();
+
+    bool showResults = false;
+
+    bool running = false;
+
+    ScenarioResults? result = null;
+
+    private void ShowInput()
+    {
+        showResults = false;
+        running = false;
+    }
+
+    private void ShowRunning()
+    {
+        running = true;
+    }
+
+    private void ShowResults()
+    {
+        showResults = true;
+    }
+
+    private async Task RunSimulation()
+    {
+        if (!running)
+        {
+            running = true;
+            StateHasChanged();
+            await Task.CompletedTask;
+            result = await WurmSkillUtil.RunScenarioAsync(scenario);
+            ShowResults();
+            running = false;
+            StateHasChanged();
+            await Task.CompletedTask;
+        }
+    }
+
+}
