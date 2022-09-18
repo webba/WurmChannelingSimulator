@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace WurmSimulator.Lib
 {
-    public static class WurmSkillUtil
+    public class WurmSkillUtil
     {
         private static readonly Random random = new();
         private static readonly Normal normalDist = new();
@@ -19,6 +19,9 @@ namespace WurmSimulator.Lib
         public static readonly double CocDifficulty = 60;
         public static readonly double CocFavorCost = 50;
         public static readonly double LtFavorCost = 100;
+
+        private double targetSims = 0;
+        private ConcurrentBag<int> completedSimulations = new ConcurrentBag<int>();
 
         public static double SkillCheck(double skill, double difficulty, double bonus)
         {
@@ -102,10 +105,50 @@ namespace WurmSimulator.Lib
             return mod + newPower;
         }
 
-        public static async Task<ScenarioResults> RunScenarioAsync(Scenario scenario)
+        public async Task<ScenarioResults> RunScenarioAsync(Scenario scenario, Action<double> callback)
         {
+            await Task.Yield();
+
+            completedSimulations.Clear();
+            targetSims = (int)scenario.Simulations;
+
             var tasks = Enumerable.Range(0, (int)scenario.Simulations)
-                .Select(s => RunScenarioSimulationAsync(scenario))
+                .Select(s => RunScenarioSimulationAsync(scenario, s, callback))
+                .ToList();
+
+            var resultsList = await Task.WhenAll(tasks);
+
+            return new()
+            {
+                Shatters = resultsList.Sum(x => x.Shatter),
+                Successes = resultsList.Count(x => x.Success),
+                TotalFavor = new()
+                {
+                    Average = resultsList.Average(x => x.TotalFavor),
+                    StandardDeviation = Statistics.StandardDeviation(resultsList.Select(x => x.TotalFavor))
+                },
+                TotalCasts = new()
+                {
+                    Average = resultsList.Average(x => x.TotalCasts),
+                    StandardDeviation = Statistics.StandardDeviation(resultsList.Select(x => (double)x.TotalCasts))
+                },
+                TotalDispels = new()
+                {
+                    Average = resultsList.Average(x => x.TotalDispels),
+                    StandardDeviation = Statistics.StandardDeviation(resultsList.Select(x => (double)x.TotalDispels))
+                }
+            };
+        }
+
+        public async Task<ScenarioResults> RunScenarioAsyncCallback(Scenario scenario, Action<double> callback)
+        {
+            await Task.Yield();
+
+            completedSimulations.Clear();
+            targetSims = (int)scenario.Simulations;
+
+            var tasks = Enumerable.Range(0, (int)scenario.Simulations)
+                .Select(s => RunScenarioSimulationAsync(scenario, s, callback))
                 .ToList();
 
             var resultsList = await Task.WhenAll(tasks);
@@ -160,15 +203,23 @@ namespace WurmSimulator.Lib
             };
         }
 
-        public static async Task<SimulationResult> RunScenarioSimulationAsync(Scenario scenario)
+        public double GetProgress()
         {
-            await Task.CompletedTask;
-            return RunScenarioSimulation(scenario);
+            return (double)completedSimulations.Count() / targetSims;
+        }
+
+        public async Task<SimulationResult> RunScenarioSimulationAsync(Scenario scenario, int simulation, Action<double> callback)
+        {
+            await Task.Yield();
+            SimulationResult result = RunScenarioSimulation(scenario);
+            completedSimulations.Add(simulation);
+            callback(GetProgress());
+            return result;
         }
 
         public static SimulationResult RunScenarioSimulation(Scenario scenario)
         {
-            SimulationResult result = new ();
+            SimulationResult result = new();
 
             bool isCurrentItem = false;
             double currentCastPower = 0;
@@ -221,7 +272,8 @@ namespace WurmSimulator.Lib
                                 isCurrentItem = false;
                                 currentCastPower = 0;
                                 result.Shatter += 1;
-                            } else if (scenario.ShatterType != ShatterType.Seryll)
+                            }
+                            else if (scenario.ShatterType != ShatterType.Seryll)
                             {
                                 result.Shatter += 1;
                                 completed = true;

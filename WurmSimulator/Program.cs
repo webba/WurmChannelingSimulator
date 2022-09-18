@@ -11,11 +11,27 @@ List<Scenario> scenarioList = new List<Scenario>()
 {
     new Scenario()
     {
-        TargetPower = 109,
-        DispellThreshold = 20
+        TargetPower = 100,
+        DispellThreshold = 80,
+        ChannelingSkill = 99,
+        ItemQL = 90
     },
+    new Scenario()
+    {
+        TargetPower = 100,
+        DispellThreshold = 80,
+        ChannelingSkill = 99,
+        ItemQL = 80
+    },
+    new Scenario()
+    {
+        TargetPower = 100,
+        DispellThreshold = 80,
+        ChannelingSkill = 99,
+        ItemQL = 70
+    }
 };
-
+Console.WriteLine("ChannelingSkill;Bene;DispellThreshold;Bonus;TargetPower;ItemQL;simulations;average total favor;stdev total favor;average total casts;stdev total casts;average total dispels;stdev total dispels;shatter rate");
 foreach (Scenario scenario in scenarioList)
 {
 
@@ -26,7 +42,7 @@ foreach (Scenario scenario in scenarioList)
     double dispellThreshold = scenario.DispellThreshold;
     double itemQL = scenario.ItemQL;
 
-    int simulations = 10000;
+    int simulations = 1000000;
 
     List<double> totalFavorList = new();
     List<double> totalSkillCastsList = new();

@@ -8,7 +8,7 @@ namespace WurmSimulator.Lib
 {
     public class Scenario
     {
-        public double ChannelingSkill { get; set; } = 100;
+        public double ChannelingSkill { get; set; } = 99;
 
         public bool Bene { get; set; } = true;
 
