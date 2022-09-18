@@ -1,6 +1,5 @@
 ﻿@page "/"
 @using WurmSimulator.Lib
-@inject WurmSkillUtil skillUtil
 @inject HttpClient client
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light p-3 mb-5">
@@ -69,6 +68,9 @@ else if (running)
       <span class="visually-hidden">Loading...</span>
     </div>
     <p>Loading... (@progress.ToString("P"))</p>
+    if(error != null){
+        <p>Error: @error</p>
+    }
 }
 else
 {
@@ -116,6 +118,8 @@ else
 
     bool running = false;
 
+    string? error = null;
+
     double progress = 0;
 
     ScenarioResults? result = null;
@@ -142,12 +146,10 @@ else
         {
             running = true;
             StateHasChanged();
-            
-            result = await skillUtil.RunScenarioAsync(scenario, (d) =>
-            {
-                progress = d;
-                StateHasChanged();
-            });
+
+            HttpResponseMessage res = await client.PostAsJsonAsync<Scenario>("/api/Simulate", scenario);
+            res.EnsureSuccessStatusCode();
+            result = await res.Content.ReadFromJsonAsync<ScenarioResults>();
             ShowResults();
             running = false;
             StateHasChanged();
