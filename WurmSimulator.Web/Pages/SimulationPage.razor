@@ -157,11 +157,7 @@ else
                 running = false;
             } catch(HttpRequestException ex)
             {
-                if(ex.StatusCode == System.Net.HttpStatusCode.InternalServerError)
-                {
-                    error = "An error occured - this is likely due to a timeout, please use less simulations";
-                }
-                error = "An error occured - unknown";
+                error = $"An error occured - this is likely due to a timeout, please use less simulations ({ex.StatusCode})";
             }
             StateHasChanged();
         }
