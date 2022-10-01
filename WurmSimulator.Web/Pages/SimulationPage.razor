@@ -148,10 +148,21 @@ else
             StateHasChanged();
 
             HttpResponseMessage res = await client.PostAsJsonAsync<Scenario>("/api/Simulate", scenario);
-            res.EnsureSuccessStatusCode();
-            result = await res.Content.ReadFromJsonAsync<ScenarioResults>();
-            ShowResults();
-            running = false;
+
+            try
+            {
+                res.EnsureSuccessStatusCode();
+                result = await res.Content.ReadFromJsonAsync<ScenarioResults>();
+                ShowResults();
+                running = false;
+            } catch(HttpRequestException ex)
+            {
+                if(ex.StatusCode == System.Net.HttpStatusCode.InternalServerError)
+                {
+                    error = "An error occured - this is likely due to a timeout, please use less simulations";
+                }
+                error = "An error occured - unknown";
+            }
             StateHasChanged();
         }
     }
