@@ -14,16 +14,17 @@ namespace WurmSimulator.API
     public static class Simulate
     {
         [FunctionName("Example")]
-        public static async Task<IActionResult> Example(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)][FromBody] HttpRequest req,
+        public static IActionResult Example(
+            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("C# Running Example.");
 
             return new OkObjectResult(new Scenario());
         }
+
         [FunctionName("Simulate")]
-        public static async Task<IActionResult> Run(
+        public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)][FromBody] Scenario scenario,
             ILogger log)
         {

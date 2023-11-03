@@ -21,7 +21,7 @@ namespace WurmSimulator.Lib
         public static readonly double LtFavorCost = 100;
 
         private double targetSims = 0;
-        private ConcurrentBag<int> completedSimulations = new ConcurrentBag<int>();
+        private readonly ConcurrentBag<int> completedSimulations = new();
 
         public static double SkillCheck(double skill, double difficulty, double bonus)
         {
@@ -48,7 +48,7 @@ namespace WurmSimulator.Lib
             float w = 30 - Math.Abs(skill - difficulty) / 4;
 
             int attempts = 0;
-            float result = 0;
+            float result;
             while (true)
             {
                 result = (float)normalDist.Sample() * (w + Math.Abs(slide) / 6) + slide;
@@ -205,7 +205,7 @@ namespace WurmSimulator.Lib
 
         public double GetProgress()
         {
-            return (double)completedSimulations.Count() / targetSims;
+            return (double)completedSimulations.Count / targetSims;
         }
 
         public async Task<SimulationResult> RunScenarioSimulationAsync(Scenario scenario, int simulation, Action<double> callback)
