@@ -31,10 +31,14 @@ namespace WurmSimulator.IsolatedAPI
         [Function("Simulate")]
         public async Task<HttpResponseData> Simulate([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
-            _logger.LogInformation("C# Running Simulate.");
+            _logger.LogInformation("C# Running Simulate."); 
+            
+            var serializeOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
 
-            var scenario = await JsonSerializer.DeserializeAsync<Scenario>(req.Body);
-
+            var scenario = await JsonSerializer.DeserializeAsync<Scenario>(req.Body, serializeOptions);
 
             if (scenario == null)
             {
