@@ -124,6 +124,11 @@ else
 
     ScenarioResults? result = null;
 
+    System.Text.Json.JsonSerializerOptions serializerOptions = new()
+        {
+            PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+        };
+
     private void ShowInput()
     {
         showResults = false;
@@ -147,7 +152,8 @@ else
             running = true;
             StateHasChanged();
 
-            HttpResponseMessage res = await client.PostAsJsonAsync<Scenario>("/api/Simulate", scenario);
+
+            HttpResponseMessage res = await client.PostAsJsonAsync<Scenario>("/api/Simulate", scenario, serializerOptions);
 
             try
             {

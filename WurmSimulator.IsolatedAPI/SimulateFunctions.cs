@@ -10,10 +10,15 @@ namespace WurmSimulator.IsolatedAPI
     public class SimulateFunctions
     {
         private readonly ILogger _logger;
+        private readonly JsonSerializerOptions _serializerOptions;
 
         public SimulateFunctions(ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<SimulateFunctions>();
+            _serializerOptions = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
         }
 
         [Function("Example")]
@@ -24,7 +29,7 @@ namespace WurmSimulator.IsolatedAPI
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.Headers.Add("Content-Type", "application/json");
 
-            response.WriteString(JsonSerializer.Serialize(new Scenario()));
+            response.WriteString(JsonSerializer.Serialize(new Scenario(), _serializerOptions));
             return response;
         }
 
@@ -32,13 +37,8 @@ namespace WurmSimulator.IsolatedAPI
         public async Task<HttpResponseData> Simulate([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
             _logger.LogInformation("C# Running Simulate."); 
-            
-            var serializeOptions = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
 
-            var scenario = await JsonSerializer.DeserializeAsync<Scenario>(req.Body, serializeOptions);
+            var scenario = await JsonSerializer.DeserializeAsync<Scenario>(req.Body, _serializerOptions);
 
             if (scenario == null)
             {
