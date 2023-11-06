@@ -9,9 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WurmSimulator.Web", "WurmSi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WurmSimulator.Lib", "WurmSimulator.Lib\WurmSimulator.Lib.csproj", "{B7139A9A-050F-4AF9-BF82-178965178470}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WurmSimulator.API", "WurmSimulator.API\WurmSimulator.API.csproj", "{04B3983E-EB54-4362-B847-7D166606EAE5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WurmSimulator.IsolatedAPI", "WurmSimulator.IsolatedAPI\WurmSimulator.IsolatedAPI.csproj", "{EC96130C-DEAD-47D6-8A7A-70402F9189B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WurmSimulator.IsolatedAPI", "WurmSimulator.IsolatedAPI\WurmSimulator.IsolatedAPI.csproj", "{EC96130C-DEAD-47D6-8A7A-70402F9189B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +29,6 @@ Global
 		{B7139A9A-050F-4AF9-BF82-178965178470}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7139A9A-050F-4AF9-BF82-178965178470}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7139A9A-050F-4AF9-BF82-178965178470}.Release|Any CPU.Build.0 = Release|Any CPU
-		{04B3983E-EB54-4362-B847-7D166606EAE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{04B3983E-EB54-4362-B847-7D166606EAE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{04B3983E-EB54-4362-B847-7D166606EAE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{04B3983E-EB54-4362-B847-7D166606EAE5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EC96130C-DEAD-47D6-8A7A-70402F9189B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EC96130C-DEAD-47D6-8A7A-70402F9189B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC96130C-DEAD-47D6-8A7A-70402F9189B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
